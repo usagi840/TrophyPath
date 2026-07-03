@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrophyPath - Objectifs de trophées Brawl Stars</title>
+<meta name="description" content="Fixe un objectif de trophées pour un brawler et suis ta progression jour par jour.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraunces:ital,wght@0,600;1,600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f6f5f0;
+  --bg2:#eeede7;
+  --bg3:#e4e3dc;
+  --card:#ffffff;
+  --border:#e0dfd8;
+  --text:#18180f;
+  --text2:#72716a;
+  --text3:#b0afa8;
+  --accent:#ff5c35;
+  --accent2:#e04820;
+  --accentbg:#fff3f0;
+  --blue:#3b6ef0;
+  --green:#2cb67d;
+  --red:#e84040;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.05);
+  --shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.04);
+  --r:14px;
+}
+
+html,body{min-height:100%;font-family:'Outfit',sans-serif;font-size:15px;color:var(--text);background:var(--bg)}
+body{display:flex;flex-direction:column;min-height:100vh}
+button,input{font-family:'Outfit',sans-serif}
+
+/* ── TOPBAR ── */
+.topbar{position:sticky;top:0;z-index:200;height:58px;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.brand{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;
+  color:var(--text);letter-spacing:-.5px;display:flex;align-items:center;gap:8px}
+.brand span{color:var(--accent);font-style:italic}
+
+.tbtn.accent{padding:9px 16px;border-radius:10px;border:none;background:var(--accent);
+  color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:6px}
+.tbtn.accent:hover{background:var(--accent2);transform:translateY(-1px)}
+
+/* ── LAYOUT ── */
+.main{display:flex;justify-content:center;padding:20px 12px 90px;
+  max-width:620px;margin:0 auto;width:100%}
+.feed{flex:1;width:100%;display:flex;flex-direction:column;gap:16px;min-width:0}
+
+/* ── EMPTY STATE ── */
+.empty{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  padding:48px 24px;text-align:center;border:1px solid var(--border)}
+.empty .em-ico{font-size:2.4rem;margin-bottom:12px}
+.empty h3{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:600;margin-bottom:6px}
+.empty p{font-size:.85rem;color:var(--text2);margin-bottom:18px;line-height:1.5}
+
+/* ── GOAL CARD ── */
+.goal-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
+  border:1px solid var(--border);overflow:hidden}
+.goal-head{display:flex;align-items:center;gap:12px;padding:16px}
+.goal-ico{width:52px;height:52px;border-radius:12px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
+  border:1px solid var(--border)}
+.goal-ico img{width:100%;height:100%;object-fit:contain}
+.goal-info{flex:1;min-width:0}
+.goal-info .gname{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;color:var(--text)}
+.goal-info .gsub{font-size:.78rem;color:var(--text2);margin-top:2px}
+.goal-del{width:32px;height:32px;border-radius:50%;border:none;background:none;
+  color:var(--text3);cursor:pointer;font-size:1rem;flex-shrink:0;transition:all .15s}
+.goal-del:hover{background:var(--bg);color:var(--red)}
+
+.goal-body{padding:0 16px 16px}
+.gstat-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.gstat-row .cur{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:5px}
+.gstat-row .cur .trico{color:var(--accent)}
+.gstat-row .tgt{font-size:.82rem;color:var(--text2)}
+.pbar-outer{height:9px;border-radius:6px;background:var(--bg2);overflow:hidden;margin-bottom:10px}
+.pbar-inner{height:100%;background:linear-gradient(90deg,var(--accent),#ff8c35);border-radius:6px;
+  transition:width .4s ease}
+.gmeta{display:flex;gap:16px;font-size:.76rem;color:var(--text2);flex-wrap:wrap;margin-bottom:12px}
+.gmeta b{color:var(--text);font-weight:600}
+.gmeta .warn{color:var(--red)}
+.gmeta .ok{color:var(--green)}
+
+.gactions{display:flex;gap:8px}
+.btn-check{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent);
+  color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-check:hover{background:var(--accent2)}
+.btn-check:disabled{opacity:.5;cursor:default}
+.btn-hist{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);
+  background:none;color:var(--text);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s}
+.btn-hist:hover{border-color:var(--text2);background:var(--bg)}
+
+.history{border-top:1px solid var(--border);padding:12px 16px;display:none;background:var(--bg)}
+.history.open{display:block}
+.hrow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;
+  font-size:.82rem;border-bottom:1px solid var(--border)}
+.hrow:last-child{border-bottom:none}
+.hrow .hdate{color:var(--text2)}
+.hrow .htro{font-weight:600;color:var(--text)}
+.hrow .hdelta{font-weight:600}
+.hrow .hdelta.pos{color:var(--green)}
+.hrow .hdelta.neg{color:var(--red)}
+.hrow .hdelta.zero{color:var(--text3)}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(24,24,15,.45);z-index:900;
+  display:none;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+@media(min-width:560px){.modal-bg{align-items:center}}
+.modal{background:var(--card);width:100%;max-width:460px;border-radius:20px 20px 0 0;
+  box-shadow:var(--shadow-lg);max-height:88vh;overflow-y:auto}
+@media(min-width:560px){.modal{border-radius:20px}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;
+  padding:16px 18px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card)}
+.modal-head h3{font-family:'Fraunces',serif;font-size:1.1rem;font-weight:600}
+.modal-close{width:32px;height:32px;border-radius:50%;border:none;background:var(--bg);
+  cursor:pointer;font-size:1rem;color:var(--text2)}
+.modal-body{padding:18px}
+
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.field label{font-size:.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
+.inp{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;
+  padding:11px 14px;font-size:.95rem;color:var(--text);outline:none;width:100%;transition:all .2s}
+.inp:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 4px rgba(255,92,53,.08)}
+.inp::placeholder{color:var(--text3)}
+
+.btn-main{width:100%;padding:13px;background:var(--accent);color:white;border:none;
+  border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s;margin-top:4px}
+.btn-main:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-main:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+.err-box{font-size:.8rem;color:var(--red);margin-top:6px;min-height:16px;text-align:center}
+
+.blist{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto}
+.bitem{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;
+  border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
+.bitem:hover{border-color:var(--accent);background:var(--accentbg)}
+.bitem.sel{border-color:var(--accent);background:var(--accentbg)}
+.bitem .bic{width:40px;height:40px;border-radius:8px;background:var(--bg);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bitem .bic img{width:100%;height:100%;object-fit:contain}
+.bitem .bnm{font-weight:600;font-size:.88rem;flex:1}
+.bitem .btr{font-size:.8rem;color:var(--text2);display:flex;align-items:center;gap:4px}
+
+.player-chip{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;
+  padding:10px 12px;margin-bottom:14px}
+.player-chip .pname{font-weight:600;font-size:.9rem}
+.player-chip .ptro{font-size:.78rem;color:var(--text2)}
+.player-chip .pchange{margin-left:auto;font-size:.78rem;color:var(--accent);cursor:pointer;font-weight:600}
+
+.step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:18px}
+.step-dots span{width:7px;height:7px;border-radius:50%;background:var(--border)}
+.step-dots span.on{background:var(--accent)}
+
+.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
+  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:#fff;padding:11px 20px;border-radius:10px;font-size:.85rem;
+  font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--red)}
+.toast.ok{background:var(--green)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">Trophy<span>Path</span></div>
+  <button class="tbtn accent" id="btn-add-goal">+ Objectif</button>
+</div>
+
+<div class="main">
+  <div class="feed" id="feed"></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Nouvel objectif</h3>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WORKER_URL = 'https://tark.alex-usagi84.workers.dev/?tag=';
+const STORAGE_KEY = 'trophypath_goals_v1';
+
+let goals = loadGoals();
+let wizard = { step:1, tag:'', player:null, selectedBrawler:null, target:'', days:'' };
+
+function loadGoals(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]; }catch(e){ return []; }
+}
+function saveGoals(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(goals)); }
+
+function todayStr(){
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function daysBetween(a,b){
+  const d1=new Date(a+'T00:00:00'), d2=new Date(b+'T00:00:00');
+  return Math.round((d2-d1)/86400000);
+}
+
+async function fetchBsPlayer(tag){
+  const clean=(tag.startsWith('#')?tag.slice(1):tag).toUpperCase().trim();
+  const res=await fetch(WORKER_URL+encodeURIComponent(clean));
+  if(!res.ok) throw new Error('Joueur introuvable');
+  const data=await res.json();
+  if(data.error) throw new Error('Joueur introuvable');
+  return data;
+}
+
+function brawlerIconUrl(id){
+  return `https://cdn.brawlify.com/brawlers/borderless/${id}.png`;
+}
+
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toast._tm);
+  toast._tm=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ══════════════ RENDER FEED ══════════════ */
+function renderFeed(){
+  const feed=document.getElementById('feed');
+  if(goals.length===0){
+    feed.innerHTML=`
+      <div class="empty">
+        <div class="em-ico">🏆</div>
+        <h3>Aucun objectif pour l'instant</h3>
+        <p>Choisis un brawler, fixe un objectif de trophées et un nombre de jours,<br>puis suis ta progression chaque jour.</p>
+        <button class="tbtn accent" onclick="openWizard()">+ Créer un objectif</button>
+      </div>`;
+    return;
+  }
+  feed.innerHTML = goals.map(g=>renderGoalCard(g)).join('');
+}
+
+function renderGoalCard(g){
+  const hist = g.history||[];
+  const last = hist[hist.length-1] || {trophies:g.startTrophies};
+  const current = last.trophies;
+  const totalNeeded = g.targetTrophies - g.startTrophies;
+  const gained = current - g.startTrophies;
+  const pct = totalNeeded>0 ? Math.max(0,Math.min(100, (gained/totalNeeded)*100)) : (current>=g.targetTrophies?100:0);
+  const elapsed = daysBetween(g.startDate, todayStr());
+  const daysLeft = g.targetDays - elapsed;
+  const remaining = Math.max(0, g.targetTrophies - current);
+  const reached = current >= g.targetTrophies;
+  const checkedToday = hist.length>0 && hist[hist.length-1].date===todayStr();
+
+  let metaHtml;
+  if(reached){
+    metaHtml = `<div class="gmeta"><span class="ok">🎉 Objectif atteint !</span></div>`;
+  } else if(daysLeft < 0){
+    metaHtml = `<div class="gmeta"><span class="warn">Délai dépassé de ${Math.abs(daysLeft)} j</span><span>Il reste <b>${remaining}</b> trophées</span></div>`;
+  } else {
+    const perDay = daysLeft>0 ? Math.ceil(remaining/Math.max(daysLeft,1)) : remaining;
+    metaHtml = `<div class="gmeta">
+      <span><b>${daysLeft}</b> j restants</span>
+      <span>Il reste <b>${remaining}</b> trophées</span>
+      <span>≈ <b>${perDay}</b>/jour</span>
+    </div>`;
+  }
+
+  const histRows = [...hist].reverse().map((h,i)=>{
+    const cls = h.delta>0?'pos':(h.delta<0?'neg':'zero');
+    const sign = h.delta>0?'+':'';
+    return `<div class="hrow">
+      <span class="hdate">${formatDate(h.date)}</span>
+      <span class="htro">${h.trophies} 🏆</span>
+      <span class="hdelta ${cls}">${sign}${h.delta}</span>
+    </div>`;
+  }).join('') || `<div class="hrow"><span class="hdate">Aucune donnée</span></div>`;
+
+  return `
+  <div class="goal-card" data-id="${g.id}">
+    <div class="goal-head">
+      <div class="goal-ico"><img src="${brawlerIconUrl(g.brawlerId)}" onerror="this.style.display='none'"/></div>
+      <div class="goal-info">
+        <div class="gname">${g.brawlerName}</div>
+        <div class="gsub">${g.playerName} · objectif fixé le ${formatDate(g.startDate)}</div>
+      </div>
+      <button class="goal-del" onclick="deleteGoal('${g.id}')">✕</button>
+    </div>
+    <div class="goal-body">
+      <div class="gstat-row">
+        <div class="cur"><span class="trico">🏆</span>${current}</div>
+        <div class="tgt">objectif : ${g.targetTrophies} (départ ${g.startTrophies})</div>
+      </div>
+      <div class="pbar-outer"><div class="pbar-inner" style="width:${pct}%"></div></div>
+      ${metaHtml}
+      <div class="gactions">
+        <button class="btn-check" ${checkedToday?'disabled':''} onclick="checkinGoal('${g.id}')">
+          ${checkedToday?"✓ Déjà pointé aujourd'hui":"Pointer aujourd'hui"}
+        </button>
+        <button class="btn-hist" onclick="toggleHistory('${g.id}')">Historique</button>
+      </div>
+    </div>
+    <div class="history" id="hist-${g.id}">${histRows}</div>
+  </div>`;
+}
+
+function formatDate(s){
+  const d=new Date(s+'T00:00:00');
+  return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+}
+
+function toggleHistory(id){
+  const el=document.getElementById('hist-'+id);
+  if(el) el.classList.toggle('open');
+}
+
+function deleteGoal(id){
+  if(!confirm('Supprimer cet objectif ?')) return;
+  goals = goals.filter(g=>g.id!==id);
+  saveGoals();
+  renderFeed();
+  toast('Objectif supprimé');
+}
+
+async function checkinGoal(id){
+  const g = goals.find(x=>x.id===id);
+  if(!g) return;
+  const btn = document.querySelector(`.goal-card[data-id="${id}"] .btn-check`);
+  const prevText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<span class="loader"></span>Actualisation…`;
+  try{
+    const player = await fetchBsPlayer(g.tag);
+    const brawler = (player.brawlers||[]).find(b=>b.id===g.brawlerId);
+    if(!brawler) throw new Error('Brawler introuvable sur ce compte');
+    const trophies = brawler.trophies;
+    const hist = g.history||[];
+    const today = todayStr();
+    const lastBefore = hist.length ? hist[hist.length-1].trophies : g.startTrophies;
+    if(hist.length && hist[hist.length-1].date===today){
+      hist[hist.length-1].trophies = trophies;
+      hist[hist.length-1].delta = trophies - (hist.length>1?hist[hist.length-2].trophies:g.startTrophies);
+    } else {
+      hist.push({date:today, trophies, delta: trophies-lastBefore});
+    }
+    g.history = hist;
+    saveGoals();
+    renderFeed();
+    const gained = trophies - lastBefore;
+    toast(gained>=0?`+${gained} trophées aujourd'hui 🎉`:`${gained} trophées aujourd'hui`, gained>=0?'ok':'err');
+  }catch(e){
+    toast(e.message||'Erreur réseau','err');
+    btn.disabled=false;
+    btn.innerHTML=prevText;
+  }
+}
+
+/* ══════════════ WIZARD (MODAL) ══════════════ */
+function openWizard(){
+  wizard = { step:1, tag:'', player:null, selectedBrawler:null, target:'', days:'' };
+  document.getElementById('modal-bg').classList.add('open');
+  document.getElementById('modal-title').textContent='Nouvel objectif';
+  renderWizard();
+}
+function closeWizard(){
+  document.getElementById('modal-bg').classList.remove('open');
+}
+
+function renderWizard(){
+  const body = document.getElementById('modal-body');
+
+  if(wizard.step===1){
+    body.innerHTML = `
+      <div class="step-dots"><span class="on"></span><span></span><span></span></div>
+      <div class="field">
+        <label>Ton tag Brawl Stars</label>
+        <input id="wz-tag" class="inp" placeholder="#1234ABCD" value="${wizard.tag}" style="text-transform:uppercase;text-align:center;font-weight:600;letter-spacing:1px"/>
+      </div>
+      <div class="err-box" id="wz-err"></div>
+      <button class="btn-main" id="wz-next">Rechercher →</button>`;
+    document.getElementById('wz-next').onclick = async ()=>{
+      const inp=document.getElementById('wz-tag');
+      const tag=(inp.value||'').trim().toUpperCase().replace(/^#*/,'');
+      const err=document.getElementById('wz-err');
+      err.textContent='';
+      if(!tag||tag.length<3){ err.textContent='Identifiant invalide'; return; }
+      const btn=document.getElementById('wz-next');
+      btn.disabled=true; btn.innerHTML=`<span class="loader"></span>Recherche…`;
+      try{
+        const player = await fetchBsPlayer(tag);
+        wizard.tag = tag;
+        wizard.player = player;
+        wizard.step = 2;
+        renderWizard();
+      }catch(e){
+        err.textContent = 'Joueur introuvable. Vérifie ton identifiant';
+        btn.disabled=false; btn.textContent='Rechercher →';
+      }
+    };
+  }
+
+  else if(wizard.step===2){
+    const brawlers = [...(wizard.player.brawlers||[])].sort((a,b)=>b.trophies-a.trophies);
+    body.innerHTML = `
+      <div class="step-dots"><span class="on"></span><span class="on"></span><span></span></div>
+      <div class="player-chip">
+        <div>
+          <div class="pname">${wizard.player.name}</div>
+          <div class="ptro">${wizard.player.trophies} 🏆 au total</div>
+        </div>
+        <span class="pchange" id="wz-change-tag">changer</span>
+      </div>
+      <div class="field"><label>Choisis un brawler</label></div>
+      <div class="blist">
+        ${brawlers.map(b=>`
+          <div class="bitem" data-bid="${b.id}">
+            <div class="bic"><img src="${brawlerIconUrl(b.id)}" onerror="this.style.display='none'"/></div>
+            <div class="bnm">${b.name}</div>
+            <div class="btr">${b.trophies} 🏆</div>
+          </div>`).join('')}
+      </div>
+      <div class="err-box" id="wz-err"></div>`;
+    document.getElementById('wz-change-tag').onclick = ()=>{ wizard.step=1; renderWizard(); };
+    body.querySelectorAll('.bitem').forEach(el=>{
+      el.onclick = ()=>{
+        body.querySelectorAll('.bitem').forEach(x=>x.classList.remove('sel'));
+        el.classList.add('sel');
+        const bid = Number(el.dataset.bid);
+        wizard.selectedBrawler = brawlers.find(b=>b.id===bid);
+        setTimeout(()=>{ wizard.step=3; renderWizard(); }, 150);
+      };
+    });
+  }
+
+  else if(wizard.step===3){
+    const b = wizard.selectedBrawler;
+    body.innerHTML = `
+      <div class="step-dots"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+      <div class="player-chip">
+        <div class="goal-ico" style="width:36px;height:36px;border-radius:8px"><img src="${brawlerIconUrl(b.id)}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none'"/></div>
+        <div>
+          <div class="pname">${b.name}</div>
+          <div class="ptro">${b.trophies} 🏆 actuellement</div>
+        </div>
+        <span class="pchange" id="wz-change-brawler">changer</span>
+      </div>
+      <div class="field">
+        <label>Objectif de trophées</label>
+        <input id="wz-target" type="number" class="inp" placeholder="ex : ${b.trophies+300}" value="${wizard.target}"/>
+      </div>
+      <div class="field">
+        <label>En combien de jours ?</label>
+        <input id="wz-days" type="number" class="inp" placeholder="ex : 14" value="${wizard.days}"/>
+      </div>
+      <div class="err-box" id="wz-err"></div>
+      <button class="btn-main" id="wz-save">Créer l'objectif</button>`;
+    document.getElementById('wz-change-brawler').onclick = ()=>{ wizard.step=2; renderWizard(); };
+    document.getElementById('wz-save').onclick = ()=>{
+      const err=document.getElementById('wz-err');
+      const target = Number(document.getElementById('wz-target').value);
+      const days = Number(document.getElementById('wz-days').value);
+      err.textContent='';
+      if(!target || target<=b.trophies){ err.textContent='L\'objectif doit être supérieur au nombre actuel de trophées'; return; }
+      if(!days || days<1){ err.textContent='Indique un nombre de jours valide'; return; }
+      const today = todayStr();
+      const goal = {
+        id: 'g'+Date.now()+Math.random().toString(36).slice(2,7),
+        tag: wizard.tag,
+        playerName: wizard.player.name,
+        brawlerId: b.id,
+        brawlerName: b.name,
+        startTrophies: b.trophies,
+        targetTrophies: target,
+        targetDays: days,
+        startDate: today,
+        history: [{date:today, trophies:b.trophies, delta:0}]
+      };
+      goals.unshift(goal);
+      saveGoals();
+      closeWizard();
+      renderFeed();
+      toast('Objectif créé 🎯','ok');
+    };
+  }
+}
+
+document.getElementById('btn-add-goal').addEventListener('click', openWizard);
+document.getElementById('modal-close').addEventListener('click', closeWizard);
+document.getElementById('modal-bg').addEventListener('click', (e)=>{
+  if(e.target.id==='modal-bg') closeWizard();
+});
+
+renderFeed();
+</script>
+</body>
+</html>
