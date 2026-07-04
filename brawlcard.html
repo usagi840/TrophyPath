@@ -569,70 +569,86 @@ async function drawRankedCard(ctx,W,H){
   ctx.fillText(`${player.trophies ?? '—'} 🏆 au total`, W/2, 850);
 }
 
-async function drawBrawlerCard(ctx,W,H){
-  const b = selectedBrawler;
-  const icon = await loadImage(brawlerIconUrl(b.id));
-
-  roundRect(ctx, W/2-140, 90, 280, 280, 28);
-  ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
-  ctx.strokeStyle='rgba(255,92,53,.6)'; ctx.lineWidth=5; ctx.stroke();
-  if(icon){
-    const size=220;
-    ctx.drawImage(icon, W/2-size/2, 90+30, size, size);
-  }
-
+async function drawSideChip(ctx,x,y,w,h,item,iconFn){
+  roundRect(ctx,x,y,w,h,20);
+  ctx.fillStyle = item ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)';
+  ctx.fill();
+  ctx.strokeStyle = item ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.08)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
   ctx.textAlign='center';
-  ctx.fillStyle='#fff';
-  ctx.font="700 58px Fraunces";
-  ctx.fillText(b.name, W/2, 430);
-
-  // power + rank badges
-  const badgeY=460;
-  chipBadge(ctx, W/2-320, badgeY, 200, 100, 'Puissance', b.power ?? '—');
-  chipBadge(ctx, W/2-100, badgeY, 200, 100, 'Rang', b.rank ?? '—');
-  chipBadge(ctx, W/2+120, badgeY, 200, 100, 'Trophées', b.trophies ?? '—');
-
-  ctx.fillStyle='rgba(255,255,255,.5)';
-  ctx.font='500 24px Outfit';
-  ctx.fillText(`Meilleur score : ${b.highestTrophies ?? '—'}`, W/2, 610);
-
-  let y = 660;
-  y = await drawUnlockSection(ctx, 'STAR POWERS', b.starPowers, starPowerIconUrl, y, W);
-  y = await drawUnlockSection(ctx, 'GADGETS', b.gadgets, gadgetIconUrl, y, W);
-  y = await drawUnlockSection(ctx, 'GEARS', b.gears, gearIconUrl, y, W);
-
-  const hcLevel = b.hypercharge?.level ?? b.hyperchargeLevel ?? null;
-  if(hcLevel){
-    roundRect(ctx, W/2-220, y+10, 440, 90, 16);
-    ctx.fillStyle='rgba(255,92,53,.18)'; ctx.fill();
-    ctx.strokeStyle='rgba(255,92,53,.5)'; ctx.lineWidth=2; ctx.stroke();
-    ctx.fillStyle='#ff9a5c';
-    ctx.font='700 28px Outfit';
-    ctx.fillText(`⚡ Hypercharge niv. ${hcLevel}`, W/2, y+65);
+  if(item){
+    const img = await loadImage(iconFn(item.id));
+    const iconSize=78;
+    if(img) ctx.drawImage(img, x+w/2-iconSize/2, y+16, iconSize, iconSize);
+    ctx.fillStyle='#fff';
+    ctx.font='600 21px Outfit';
+    let name = item.name || '';
+    while(ctx.measureText(name).width > w-18 && name.length>3){ name = name.slice(0,-1); }
+    if(name !== (item.name||'')) name = name.slice(0,-1)+'…';
+    ctx.fillText(name, x+w/2, y+h-20);
+  } else {
+    ctx.fillStyle='rgba(255,255,255,.32)';
+    ctx.font='500 19px Outfit';
+    ctx.fillText('Non', x+w/2, y+h/2-6);
+    ctx.fillText('débloqué', x+w/2, y+h/2+20);
   }
 }
 
-async function drawUnlockSection(ctx, label, items, iconFn, y, W){
-  if(!items || items.length===0) return y;
-  ctx.textAlign='left';
-  ctx.fillStyle='rgba(255,255,255,.5)';
-  ctx.font='600 20px Outfit';
-  ctx.fillText(label, 46, y);
-  y += 20;
-  const boxSize=76, gap=16, perRow=Math.floor((W-92+gap)/(boxSize+gap));
-  const imgs = await Promise.all(items.map(it=>loadImage(iconFn(it.id))));
-  items.forEach((it,i)=>{
-    const col=i%perRow, row=Math.floor(i/perRow);
-    const x=46+col*(boxSize+gap), by=y+10+row*(boxSize+gap);
-    roundRect(ctx,x,by,boxSize,boxSize,14);
-    ctx.fillStyle='rgba(255,255,255,.07)'; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2; ctx.stroke();
-    const img = imgs[i];
-    if(img) ctx.drawImage(img, x+8, by+8, boxSize-16, boxSize-16);
-  });
-  const rows = Math.ceil(items.length/perRow);
+async function drawBrawlerCard(ctx,W,H){
+  const b = selectedBrawler;
+
+  // Trophées actuels du brawler, en très grand (effet "bulle")
   ctx.textAlign='center';
-  return y+10+rows*(boxSize+gap)+6;
+  const trophyText = String(b.trophies ?? '—');
+  ctx.font = '700 140px Fraunces';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 16;
+  ctx.strokeStyle = 'rgba(0,0,0,.35)';
+  ctx.strokeText(trophyText, W/2, 175);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(trophyText, W/2, 175);
+
+  ctx.font = '600 27px Outfit';
+  ctx.fillStyle = 'rgba(255,255,255,.6)';
+  ctx.fillText(`${b.name}${b.power?' • Puissance '+b.power:''}`, W/2, 218);
+
+  // Gadgets (gauche) / Star powers (droite), en 2 emplacements chacun
+  const gadgets = b.gadgets || [];
+  const stars = b.starPowers || [];
+  const boxW=200, boxH=190, gapY=20;
+  const leftX=36, rightX=W-36-boxW;
+  const topY=350;
+  await drawSideChip(ctx, leftX, topY, boxW, boxH, gadgets[0]||null, gadgetIconUrl);
+  await drawSideChip(ctx, leftX, topY+boxH+gapY, boxW, boxH, gadgets[1]||null, gadgetIconUrl);
+  await drawSideChip(ctx, rightX, topY, boxW, boxH, stars[0]||null, starPowerIconUrl);
+  await drawSideChip(ctx, rightX, topY+boxH+gapY, boxW, boxH, stars[1]||null, starPowerIconUrl);
+
+  // Personnage en grand, centré
+  const icon = await loadImage(brawlerIconUrl(b.id));
+  const charW=460, charH=460;
+  const cx=W/2-charW/2, cy=topY-40;
+  ctx.save();
+  ctx.shadowColor='rgba(0,0,0,.5)';
+  ctx.shadowBlur=45;
+  ctx.shadowOffsetY=25;
+  if(icon) ctx.drawImage(icon, cx, cy, charW, charH);
+  ctx.restore();
+
+  // Hypercharge, pleine largeur
+  const hcLevel = b.hypercharge?.level ?? b.hyperchargeLevel ?? null;
+  const hcY = topY+2*boxH+gapY+30;
+  roundRect(ctx, 36, hcY, W-72, 110, 20);
+  ctx.fillStyle='rgba(255,92,53,.16)'; ctx.fill();
+  ctx.strokeStyle='rgba(255,92,53,.5)'; ctx.lineWidth=3; ctx.stroke();
+  ctx.fillStyle='#ff9a5c';
+  ctx.font='700 34px Outfit';
+  ctx.fillText(hcLevel ? `⚡ Hypercharge niv. ${hcLevel}` : '⚡ Hypercharge', W/2, hcY+ (hcLevel?63:50));
+  if(!hcLevel){
+    ctx.font='400 19px Outfit';
+    ctx.fillStyle='rgba(255,154,92,.65)';
+    ctx.fillText("Non disponible via l'API", W/2, hcY+82);
+  }
 }
 </script>
 </body>
