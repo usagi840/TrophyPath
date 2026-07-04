@@ -151,6 +151,7 @@ async function fetchBsPlayer(tag){
 
 function brawlerIconUrl(id){ return `https://cdn.brawlify.com/brawlers/borderless/${id}.png`; }
 function brawlerModelUrl(id){ return `https://cdn.brawlify.com/brawlers/models/${id}.png`; }
+function skinModelUrl(id){ return `https://cdn.brawlify.com/skins/${id}.png`; }
 function gadgetIconUrl(id){ return `https://cdn.brawlify.com/gadgets/borderless/${id}.png`; }
 function starPowerIconUrl(id){ return `https://cdn.brawlify.com/star-powers/borderless/${id}.png`; }
 function gearIconUrl(id){ return `https://cdn.brawlify.com/gears/borderless/${id}.png`; }
@@ -581,7 +582,6 @@ async function drawSideChip(ctx,x,y,w,h,item,iconFn){
   if(item){
     const img = await loadImage(iconFn(item.id));
     const iconSize=84;
-    // Calcul précis du centrage horizontal et vertical à l'intérieur de la case (w, h)
     if(img) ctx.drawImage(img, x + (w - iconSize)/2, y + 20, iconSize, iconSize);
     ctx.fillStyle='#fff';
     ctx.font='600 18px Outfit';
@@ -626,8 +626,15 @@ async function drawBrawlerCard(ctx,W,H){
   await drawSideChip(ctx, rightX, topY, boxW, boxH, stars[0]||null, starPowerIconUrl);
   await drawSideChip(ctx, rightX, topY+boxH+gapY, boxW, boxH, stars[1]||null, starPowerIconUrl);
 
-  // Personnage principal complet en grand au centre
-  const brawlerModel = await loadImage(brawlerModelUrl(b.id));
+  // Personnage principal complet au centre (Skin si équipé, sinon modèle de base)
+  let brawlerModel = null;
+  if (b.skin && b.skin.id && b.skin.name !== b.name) {
+    brawlerModel = await loadImage(skinModelUrl(b.skin.id));
+  }
+  if (!brawlerModel) {
+    brawlerModel = await loadImage(brawlerModelUrl(b.id));
+  }
+
   const charW=520, charH=520;
   const cx=W/2-charW/2, cy=topY-30;
   ctx.save();
@@ -639,7 +646,7 @@ async function drawBrawlerCard(ctx,W,H){
 
   // Détection propre de l'Hypercharge via "hyperCharges" (API)
   const hasHypercharge = (b.hyperCharges && b.hyperCharges.length > 0) || b.hyperchargeLevel > 0;
-  const hcY = topY+2*boxH+gapY+55; // Plus bas pour laisser respirer le visuel
+  const hcY = topY+2*boxH+gapY+55; 
   
   roundRect(ctx, 36, hcY, W-72, 110, 20);
   if(hasHypercharge) {
