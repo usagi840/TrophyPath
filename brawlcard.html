@@ -149,7 +149,6 @@ async function fetchBsPlayer(tag){
   return data;
 }
 
-// Changement ici : On utilise la liste d'icônes normales pour la sélection, mais la version "full/model" pour le grand Canvas
 function brawlerIconUrl(id){ return `https://cdn.brawlify.com/brawlers/borderless/${id}.png`; }
 function brawlerModelUrl(id){ return `https://cdn.brawlify.com/brawlers/models/${id}.png`; }
 function gadgetIconUrl(id){ return `https://cdn.brawlify.com/gadgets/borderless/${id}.png`; }
@@ -505,4 +504,177 @@ async function drawTrophiesCard(ctx,W,H){
   ctx.fillText(`#${(player.tag||'').replace(/^#/,'')}`, W/2, 398);
 
   ctx.font='700 70px Outfit';
-  ctx.fillStyle='rgba(255,255,
+  ctx.fillStyle='rgba(255,255,255,.65)';
+  ctx.fillText('🏆', W/2, 560);
+  ctx.font='700 170px Fraunces';
+  ctx.fillStyle='#ffcf6b';
+  ctx.fillText(String(player.trophies ?? '—'), W/2, 740);
+  ctx.font='600 30px Outfit';
+  ctx.fillStyle='rgba(255,255,255,.55)';
+  ctx.fillText('TROPHÉES ACTUELS', W/2, 785);
+
+  roundRect(ctx, W/2-220, 860, 440, 110, 18);
+  ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2; ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.5)';
+  ctx.font='600 20px Outfit';
+  ctx.fillText('MEILLEUR SCORE', W/2, 905);
+  ctx.fillStyle='#fff';
+  ctx.font='700 46px Fraunces';
+  ctx.fillText(String(player.highestTrophies ?? '—'), W/2, 950);
+}
+
+async function drawRankedCard(ctx,W,H){
+  const rankRaw = player.rankedRankName || player.highestAllTimeRankedRankName || null;
+  const rankFr = translateRank(rankRaw) || 'Non classé';
+  const [c1,c2] = rankTierColors(rankRaw);
+
+  // médaillon dégradé
+  const grad = ctx.createLinearGradient(W/2-160,0,W/2+160,0);
+  grad.addColorStop(0,c1); grad.addColorStop(1,c2);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(W/2,260,160,0,Math.PI*2); ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(W/2,260,160,0,Math.PI*2);
+  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=6; ctx.stroke();
+  ctx.fillStyle='#fff';
+  ctx.font='700 64px Outfit';
+  ctx.textAlign='center';
+  ctx.fillText('🎖️', W/2, 285);
+
+  ctx.fillStyle='#fff';
+  ctx.font="700 56px Fraunces";
+  ctx.fillText(rankFr, W/2, 500);
+
+  ctx.fillStyle='rgba(255,255,255,.55)';
+  ctx.font='500 26px Outfit';
+  ctx.fillText(player.name||'—', W/2, 545);
+  ctx.font='500 22px Outfit';
+  ctx.fillText(`#${(player.tag||'').replace(/^#/,'')}`, W/2, 578);
+
+  if(player.highestAllTimeRankedRankName && rankRaw!==player.highestAllTimeRankedRankName){
+    roundRect(ctx, W/2-260, 650, 520, 110, 18);
+    ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.5)';
+    ctx.font='600 20px Outfit';
+    ctx.fillText('MEILLEUR RANG ATTEINT', W/2, 695);
+    ctx.fillStyle='#fff';
+    ctx.font='700 38px Fraunces';
+    ctx.fillText(translateRank(player.highestAllTimeRankedRankName), W/2, 738);
+  }
+
+  ctx.fillStyle='rgba(255,255,255,.65)';
+  ctx.font='500 24px Outfit';
+  ctx.fillText(`${player.trophies ?? '—'} 🏆 au total`, W/2, 850);
+}
+
+async function drawSideChip(ctx,x,y,w,h,item,iconFn){
+  roundRect(ctx,x,y,w,h,20);
+  ctx.fillStyle = item ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)';
+  ctx.fill();
+  ctx.strokeStyle = item ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.08)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  
+  if(item){
+    const img = await loadImage(iconFn(item.id));
+    const iconSize = 84;
+    // CENTRAGE PARFAIT DE L'ICÔNE : Calcul basé sur la largeur totale du carré pour éviter l'effet décalé
+    if(img) ctx.drawImage(img, x + (w - iconSize) / 2, y + 22, iconSize, iconSize);
+    
+    ctx.textAlign='center';
+    ctx.fillStyle='#fff';
+    ctx.font='600 19px Outfit';
+    let name = item.name || '';
+    while(ctx.measureText(name).width > w-18 && name.length>3){ name = name.slice(0,-1); }
+    if(name !== (item.name||'')) name = name.slice(0,-1)+'…';
+    ctx.fillText(name, x+w/2, y+h-20);
+  } else {
+    ctx.textAlign='center';
+    ctx.fillStyle='rgba(255,255,255,.32)';
+    ctx.font='500 19px Outfit';
+    ctx.fillText('Non', x+w/2, y+h/2-6);
+    ctx.fillText('débloqué', x+w/2, y+h/2+20);
+  }
+}
+
+async function drawBrawlerCard(ctx,W,H){
+  const b = selectedBrawler;
+
+  // Trophées actuels du brawler, en très grand (effet "bulle")
+  ctx.textAlign='center';
+  const trophyText = String(b.trophies ?? '—');
+  ctx.font = '700 140px Fraunces';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = 16;
+  ctx.strokeStyle = 'rgba(0,0,0,.35)';
+  ctx.strokeText(trophyText, W/2, 175);
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(trophyText, W/2, 175);
+
+  ctx.font = '600 27px Outfit';
+  ctx.fillStyle = 'rgba(255,255,255,.6)';
+  ctx.fillText(`${b.name}${b.power?' • Puissance '+b.power:''}`, W/2, 218);
+
+  // Gadgets (gauche) / Star powers (droite), en 2 emplacements chacun
+  const gadgets = b.gadgets || [];
+  const stars = b.starPowers || [];
+  const boxW=200, boxH=190, gapY=20;
+  const leftX=36, rightX=W-36-boxW;
+  const topY=350;
+  await drawSideChip(ctx, leftX, topY, boxW, boxH, gadgets[0]||null, gadgetIconUrl);
+  await drawSideChip(ctx, leftX, topY+boxH+gapY, boxW, boxH, gadgets[1]||null, gadgetIconUrl);
+  await drawSideChip(ctx, rightX, topY, boxW, boxH, stars[0]||null, starPowerIconUrl);
+  await drawSideChip(ctx, rightX, topY+boxH+gapY, boxW, boxH, stars[1]||null, starPowerIconUrl);
+
+  // MODIFICATION 1 : Affichage du skin entier (modèle sans bordure) centré au milieu du Canvas
+  const brawlerModel = await loadImage(brawlerModelUrl(b.id));
+  const charW=560, charH=560;
+  const cx=W/2-charW/2, cy=topY-40;
+  ctx.save();
+  ctx.shadowColor='rgba(0,0,0,.55)';
+  ctx.shadowBlur=50;
+  ctx.shadowOffsetY=20;
+  if(brawlerModel) ctx.drawImage(brawlerModel, cx, cy, charW, charH);
+  ctx.restore();
+
+  // MODIFICATION 3 : Gestion dynamique et exacte de l'Hypercharge via l'API officielle
+  const hasHypercharge = (b.hypercharges && b.hypercharges.length > 0) || b.hyperchargeLevel > 0 || (b.hypercharge && b.hypercharge.id);
+  const hcY = topY+2*boxH+gapY+30;
+  
+  roundRect(ctx, 36, hcY, W-72, 110, 20);
+  if(hasHypercharge) {
+    // Dégradé violet néon/électrique propre au design Hypercharge de Brawl Stars
+    const hcGrad = ctx.createLinearGradient(36, 0, W-36, 0);
+    hcGrad.addColorStop(0, '#4a00e0');
+    hcGrad.addColorStop(0.5, '#8e2de2');
+    hcGrad.addColorStop(1, '#f000ff');
+    ctx.fillStyle = hcGrad;
+    ctx.fill();
+    ctx.strokeStyle = '#ff00ff';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '700 36px Outfit';
+    ctx.shadowColor = 'rgba(240, 0, 255, 1)';
+    ctx.shadowBlur = 15;
+    ctx.fillText('⚡ Hypercharge Active ⚡', W/2, hcY+65);
+    ctx.shadowBlur = 0; // Reset ombre
+  } else {
+    // Si non débloqué ou indisponible pour ce personnage
+    ctx.fillStyle = 'rgba(255,255,255,.04)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.1)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.25)';
+    ctx.font = '600 32px Outfit';
+    ctx.fillText('⚡ Hypercharge indisponible', W/2, hcY+65);
+  }
+}
+</script>
+</body>
+</html>
