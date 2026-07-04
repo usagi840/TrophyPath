@@ -150,8 +150,8 @@ async function fetchBsPlayer(tag){
 }
 
 function brawlerIconUrl(id){ return `https://cdn.brawlify.com/brawlers/borderless/${id}.png`; }
-function brawlerModelUrl(id){ return `https://cdn.brawlify.com/brawlers/models/${id}.png`; }
-function skinModelUrl(id){ return `https://cdn.brawlify.com/skins/${id}.png`; }
+function brawlerModelUrl(id){ return `https://cdn.brawlify.com/brawlers/model/${id}.png`; }
+function skinModelUrl(id){ return `https://cdn.brawlify.com/skins/borderless/${id}.png`; }
 function gadgetIconUrl(id){ return `https://cdn.brawlify.com/gadgets/borderless/${id}.png`; }
 function starPowerIconUrl(id){ return `https://cdn.brawlify.com/star-powers/borderless/${id}.png`; }
 function gearIconUrl(id){ return `https://cdn.brawlify.com/gears/borderless/${id}.png`; }
@@ -633,6 +633,9 @@ async function drawBrawlerCard(ctx,W,H){
   }
   if (!brawlerModel) {
     brawlerModel = await loadImage(brawlerModelUrl(b.id));
+  }
+  if (!brawlerModel) {
+    brawlerModel = await loadImage(brawlerIconUrl(b.id));
   }
 
   const charW=520, charH=520;
