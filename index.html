@@ -90,6 +90,11 @@ button,input{font-family:'Outfit',sans-serif}
 .gmeta .warn{color:var(--red)}
 .gmeta .ok{color:var(--green)}
 
+.live-row{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--text3);margin-bottom:12px}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;
+  box-shadow:0 0 0 0 rgba(44,182,125,.5);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%{box-shadow:0 0 0 0 rgba(44,182,125,.5)}70%{box-shadow:0 0 0 6px rgba(44,182,125,0)}100%{box-shadow:0 0 0 0 rgba(44,182,125,0)}}
+
 .gactions{display:flex;gap:8px}
 .btn-check{flex:1;padding:10px;border-radius:10px;border:none;background:var(--accent);
   color:#fff;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
@@ -309,10 +314,12 @@ function renderGoalCard(g){
       </div>
       <div class="pbar-outer"><div class="pbar-inner" style="width:${pct}%"></div></div>
       ${metaHtml}
+      <div class="live-row">
+        <span class="live-dot"></span>
+        <span class="live-txt">${g.lastError? 'Erreur de connexion' : (g.lastChecked? 'Actualisé il y a '+timeAgo(g.lastChecked) : 'En attente…')}</span>
+      </div>
       <div class="gactions">
-        <button class="btn-check" ${checkedToday?'disabled':''} onclick="checkinGoal('${g.id}')">
-          ${checkedToday?"✓ Déjà pointé aujourd'hui":"Pointer aujourd'hui"}
-        </button>
+        <button class="btn-check" onclick="checkinGoal('${g.id}')">Actualiser maintenant</button>
         <button class="btn-hist" onclick="toggleHistory('${g.id}')">Historique</button>
       </div>
     </div>
@@ -338,38 +345,86 @@ function deleteGoal(id){
   toast('Objectif supprimé');
 }
 
+function timeAgo(ts){
+  const s = Math.max(0, Math.floor((Date.now()-ts)/1000));
+  if(s<60) return s+'s';
+  const m = Math.floor(s/60);
+  if(m<60) return m+'min';
+  const h = Math.floor(m/60);
+  return h+'h';
+}
+
+// Récupère les trophées actuels du brawler d'un objectif et met à jour son historique du jour
+async function pullGoalUpdate(g){
+  const player = await fetchBsPlayer(g.tag);
+  const brawler = (player.brawlers||[]).find(b=>b.id===g.brawlerId);
+  if(!brawler) throw new Error('Brawler introuvable sur ce compte');
+  const trophies = brawler.trophies;
+  const hist = g.history||[];
+  const today = todayStr();
+  const lastBefore = hist.length ? hist[hist.length-1].trophies : g.startTrophies;
+  if(hist.length && hist[hist.length-1].date===today){
+    hist[hist.length-1].trophies = trophies;
+    hist[hist.length-1].delta = trophies - (hist.length>1?hist[hist.length-2].trophies:g.startTrophies);
+  } else {
+    hist.push({date:today, trophies, delta: trophies-lastBefore});
+  }
+  g.history = hist;
+  g.lastChecked = Date.now();
+  g.lastError = false;
+  return trophies - lastBefore;
+}
+
+// Actualisation manuelle (bouton), avec toast + feedback visuel
 async function checkinGoal(id){
   const g = goals.find(x=>x.id===id);
   if(!g) return;
   const btn = document.querySelector(`.goal-card[data-id="${id}"] .btn-check`);
-  const prevText = btn.innerHTML;
-  btn.disabled = true;
-  btn.innerHTML = `<span class="loader"></span>Actualisation…`;
+  const prevText = btn ? btn.innerHTML : '';
+  if(btn){ btn.disabled = true; btn.innerHTML = `<span class="loader"></span>Actualisation…`; }
   try{
-    const player = await fetchBsPlayer(g.tag);
-    const brawler = (player.brawlers||[]).find(b=>b.id===g.brawlerId);
-    if(!brawler) throw new Error('Brawler introuvable sur ce compte');
-    const trophies = brawler.trophies;
-    const hist = g.history||[];
-    const today = todayStr();
-    const lastBefore = hist.length ? hist[hist.length-1].trophies : g.startTrophies;
-    if(hist.length && hist[hist.length-1].date===today){
-      hist[hist.length-1].trophies = trophies;
-      hist[hist.length-1].delta = trophies - (hist.length>1?hist[hist.length-2].trophies:g.startTrophies);
-    } else {
-      hist.push({date:today, trophies, delta: trophies-lastBefore});
-    }
-    g.history = hist;
+    const gained = await pullGoalUpdate(g);
     saveGoals();
     renderFeed();
-    const gained = trophies - lastBefore;
     toast(gained>=0?`+${gained} trophées aujourd'hui 🎉`:`${gained} trophées aujourd'hui`, gained>=0?'ok':'err');
   }catch(e){
+    g.lastError = true;
+    saveGoals();
     toast(e.message||'Erreur réseau','err');
-    btn.disabled=false;
-    btn.innerHTML=prevText;
+    if(btn){ btn.disabled=false; btn.innerHTML=prevText; }
   }
 }
+
+// Actualisation silencieuse en arrière-plan (polling), sans toast ni blocage de bouton
+async function silentRefreshGoal(g){
+  try{
+    await pullGoalUpdate(g);
+  }catch(e){
+    g.lastError = true;
+  }
+}
+
+async function refreshAllGoals(){
+  if(goals.length===0) return;
+  await Promise.all(goals.map(g=>silentRefreshGoal(g)));
+  saveGoals();
+  renderFeed();
+}
+
+/* ── Polling automatique toutes les 5 secondes tant que l'onglet est visible ── */
+const AUTO_REFRESH_MS = 5000;
+let autoTimer = null;
+function startAutoRefresh(){
+  stopAutoRefresh();
+  autoTimer = setInterval(()=>{ if(!document.hidden) refreshAllGoals(); }, AUTO_REFRESH_MS);
+}
+function stopAutoRefresh(){
+  if(autoTimer){ clearInterval(autoTimer); autoTimer=null; }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden){ stopAutoRefresh(); }
+  else { refreshAllGoals(); startAutoRefresh(); }
+});
 
 /* ══════════════ WIZARD (MODAL) ══════════════ */
 function openWizard(){
@@ -489,7 +544,8 @@ function renderWizard(){
         targetTrophies: target,
         targetDays: days,
         startDate: today,
-        history: [{date:today, trophies:b.trophies, delta:0}]
+        history: [{date:today, trophies:b.trophies, delta:0}],
+        lastChecked: Date.now()
       };
       goals.unshift(goal);
       saveGoals();
@@ -507,6 +563,8 @@ document.getElementById('modal-bg').addEventListener('click', (e)=>{
 });
 
 renderFeed();
+refreshAllGoals();
+startAutoRefresh();
 </script>
 </body>
 </html>
