@@ -3,319 +3,182 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BrawlCard - Génère ta carte de profil Brawl Stars</title>
-<meta name="description" content="Génère une belle image de ton profil, tes trophées, ton rang classé ou un brawler, à partager où tu veux.">
+<title>BrawlCard ✨ | Génère ta fiche de profil Brawl Stars unique</title>
+<meta name="description" content="Crée une fiche unique et personnalisée de ton profil Brawl Stars, tes brawlers et ton rang classé. Choisis ton fond préféré et utilise les assets officiels !">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght=300;400;500;600;700&family=Fraunces:ital,wght=0,600;1,600;0,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+@font-face {
+  font-family: 'BrawlStars';
+  src: url('https://cdn.brawlify.com/fonts/brawlstars.ttf') format('truetype');
+  font-weight: normal; font-style: normal;
+}
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:#f6f5f0;
-  --bg2:#eeede7;
+  --bg:#101115;
+  --bg-panel:#1a1c23;
   --card:#ffffff;
-  --border:#e0dfd8;
-  --text:#18180f;
-  --text2:#72716a;
-  --text3:#b0afa8;
-  --accent:#ff5c35;
-  --accent2:#e04820;
-  --accentbg:#fff3f0;
+  --border:#2a2d3a;
+  --text:#ffffff;
+  --text-muted:#8b91a5;
+  --accent:#ffcc00; /* Jaune Brawl Stars */
+  --accent-2:#ff9900;
+  --accent-bg:rgba(255,204,0,0.1);
   --green:#2cb67d;
   --red:#e84040;
-  --shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04);
-  --shadow-lg:0 8px 32px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.04);
-  --r:14px;
+  --shadow:0 4px 12px rgba(0,0,0,.3);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.4);
+  --r:16px;
+  --font-bs:'BrawlStars', sans-serif;
 }
 
 html,body{min-height:100%;font-family:'Outfit',sans-serif;font-size:15px;color:var(--text);background:var(--bg)}
 body{display:flex;flex-direction:column;min-height:100vh}
-button,input{font-family:'Outfit',sans-serif}
+button,input,select{font-family:'Outfit',sans-serif}
 
-.topbar{position:sticky;top:0;z-index:200;height:58px;
-  background:rgba(255,255,255,.88);backdrop-filter:blur(20px);
+.topbar{position:sticky;top:0;z-index:200;height:65px;
+  background:rgba(26,28,35,.92);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;padding:0 20px}
-.brand{font-family:'Fraunces',serif;font-size:1.5rem;font-weight:600;
-  color:var(--text);letter-spacing:-.5px}
-.brand span{color:var(--accent);font-style:italic}
+  display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.brand{font-family:var(--font-bs);font-size:1.8rem;color:var(--accent);text-shadow:0 2px 0 #000}
+.brand span{color:#fff;}
 
-.main{display:flex;justify-content:center;padding:20px 12px 60px;
-  max-width:520px;margin:0 auto;width:100%;flex-direction:column;gap:16px}
+.main{display:flex;justify-content:center;padding:24px 16px 80px;
+  max-width:600px;margin:0 auto;width:100%;flex-direction:column;gap:20px}
 
-.card-box{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);
-  border:1px solid var(--border);padding:18px}
+.card-box{background:var(--bg-panel);border-radius:var(--r);box-shadow:var(--shadow);
+  border:1px solid var(--border);padding:24px}
 
-.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.field label{font-size:.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px}
-.inp{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;
-  padding:11px 14px;font-size:.95rem;color:var(--text);outline:none;width:100%;transition:all .2s}
-.inp:focus{border-color:var(--accent);background:var(--card);box-shadow:0 0 0 4px rgba(255,92,53,.08)}
-.inp::placeholder{color:var(--text3)}
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.field label{font-size:.75rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+.inp{background:#111216;border:2px solid var(--border);border-radius:12px;
+  padding:14px;font-size:1rem;color:var(--text);outline:none;width:100%;transition:all .2s;font-weight:600}
+.inp:focus{border-color:var(--accent);background:#000;box-shadow:0 0 0 4px rgba(255,204,0,0.15)}
+.inp::placeholder{color:#4a4e5e}
 
-.btn-main{width:100%;padding:13px;background:var(--accent);color:white;border:none;
-  border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;transition:all .2s}
-.btn-main:hover{background:var(--accent2);transform:translateY(-1px)}
-.btn-main:disabled{opacity:.45;cursor:not-allowed;transform:none}
-.btn-main.secondary{background:var(--bg);color:var(--text);border:1.5px solid var(--border)}
-.btn-main.secondary:hover{background:var(--bg2);transform:none}
+.sel-inp{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:20px}
 
-.err-box{font-size:.8rem;color:var(--red);margin-top:6px;min-height:16px;text-align:center}
+.btn-main{width:100%;padding:15px;background:linear-gradient(180deg, #ffcc00 0%, #ff9900 100%);color:#000;border:none;
+  border-radius:12px;font-size:1rem;font-weight:800;text-transform:uppercase;font-family:var(--font-bs);cursor:pointer;transition:all .2s;box-shadow:0 3px 0 #b36b00;position:relative;top:0}
+.btn-main:hover{background:linear-gradient(180deg, #ffe066 0%, #ffad33 100%)}
+.btn-main:active{top:2px;box-shadow:0 1px 0 #b36b00}
+.btn-main:disabled{opacity:.5;cursor:not-allowed;top:0;box-shadow:0 3px 0 #b36b00}
+.btn-main.secondary{background:var(--border);color:var(--text);border:none;box-shadow:0 3px 0 #1a1c23}
+.btn-main.secondary:hover{background:#3a3f52}
+.btn-main.secondary:active{box-shadow:0 1px 0 #1a1c23}
 
-.player-chip{display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:12px;
-  padding:10px 12px;margin-bottom:14px}
-.player-chip img{width:36px;height:36px;border-radius:8px;object-fit:contain;background:var(--card)}
-.player-chip .pname{font-weight:600;font-size:.9rem}
-.player-chip .ptro{font-size:.78rem;color:var(--text2)}
-.player-chip .pchange{margin-left:auto;font-size:.78rem;color:var(--accent);cursor:pointer;font-weight:600}
+.err-box{font-size:.85rem;color:var(--red);margin-top:8px;min-height:18px;text-align:center;font-weight:500}
 
-.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
-.tpl-btn{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;
-  border-radius:14px;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;transition:all .15s}
-.tpl-btn:hover{border-color:var(--accent);background:var(--accentbg)}
-.tpl-btn.sel{border-color:var(--accent);background:var(--accentbg)}
-.tpl-btn .tico{font-size:1.6rem}
-.tpl-btn .tname{font-size:.82rem;font-weight:600}
+.player-chip{display:flex;align-items:center;gap:12px;background:#111216;border-radius:14px;
+  padding:12px 16px;margin-bottom:18px;border:1px solid var(--border)}
+.player-chip img{width:40px;height:40px;border-radius:10px;object-fit:contain;background:var(--bg-panel);border:2px solid var(--border)}
+.player-chip .pname{font-weight:700;font-size:1rem}
+.player-chip .ptro{font-size:.85rem;color:var(--text-muted)}
+.player-chip .pchange{margin-left:auto;font-size:.85rem;color:var(--accent);cursor:pointer;font-weight:700;text-transform:uppercase}
 
-.blist{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow-y:auto;margin-bottom:4px}
-.bitem{display:flex;align-items:center;gap:12px;padding:10px;border-radius:12px;
-  border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
-.bitem:hover{border-color:var(--accent);background:var(--accentbg)}
-.bitem.sel{border-color:var(--accent);background:var(--accentbg)}
-.bitem .bic{width:40px;height:40px;border-radius:8px;background:var(--bg);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+.tpl-btn{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 12px;
+  border-radius:16px;border:2px solid var(--border);background:#111216;cursor:pointer;transition:all .2s}
+.tpl-btn:hover{border-color:var(--accent);background:rgba(255,204,0,0.05);transform:translateY(-2px)}
+.tpl-btn.sel{border-color:var(--accent);background:var(--accent-bg);box-shadow:0 0 0 4px rgba(255,204,0,0.1)}
+.tpl-btn .tico{font-size:2rem}
+.tpl-btn .tname{font-size:.9rem;font-weight:700;text-align:center}
+
+.bg-picker{display:grid;grid-template-columns:repeat(auto-fill, minmax(80px, 1fr));gap:10px;margin-top:12px}
+.bg-option{aspect-ratio:1;border-radius:10px;border:2px solid var(--border);cursor:pointer;background-size:cover;background-position:center;transition:all .15s}
+.bg-option:hover{border-color:#fff;transform:scale(1.05)}
+.bg-option.sel{border-color:var(--accent);box-shadow:0 0 0 4px rgba(255,204,0,0.2)}
+
+.blist{display:flex;flex-direction:column;gap:10px;max-height:350px;overflow-y:auto;margin-bottom:8px;padding-right:6px}
+.blist::-webkit-scrollbar{width:6px}
+.blist::-webkit-scrollbar-track{background:#111216;border-radius:3px}
+.blist::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+.bitem{display:flex;align-items:center;gap:14px;padding:12px;border-radius:14px;
+  border:2px solid var(--border);cursor:pointer;transition:all .15s;background:#111216}
+.bitem:hover{border-color:#fff;background:#1a1c23;transform:translateX(2px)}
+.bitem.sel{border-color:var(--accent);background:var(--accent-bg)}
+.bitem .bic{width:48px;height:48px;border-radius:10px;background:var(--bg-panel);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;overflow:hidden;border:2px solid var(--border)}
 .bitem .bic img{width:100%;height:100%;object-fit:contain}
-.bitem .bnm{font-weight:600;font-size:.88rem;flex:1}
-.bitem .btr{font-size:.8rem;color:var(--text2)}
+.bitem .bnm{font-weight:700;font-size:.95rem;flex:1;color:#fff}
+.bitem .btr{font-size:.85rem;color:var(--accent);font-weight:700}
 
-.preview-wrap{display:flex;justify-content:center;padding:8px 0}
-.preview-wrap canvas{width:100%;max-width:360px;height:auto;border-radius:16px;box-shadow:var(--shadow-lg)}
+.preview-wrap{display:flex;justify-content:center;padding:12px 0;position:relative}
+.preview-wrap canvas{width:100%;max-width:400px;height:auto;border-radius:20px;box-shadow:var(--shadow-lg);border:1px solid rgba(255,255,255,0.1)}
 
-.loader{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);
-  border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:6px}
+.loader{display:inline-block;width:18px;height:18px;border:3px solid rgba(0,0,0,.15);
+  border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-4px;margin-right:8px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--text);color:#fff;padding:11px 20px;border-radius:10px;font-size:.85rem;
-  font-weight:500;opacity:0;pointer-events:none;transition:all .25s;z-index:1000;box-shadow:var(--shadow-lg)}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.err{background:var(--red)}
-.toast.ok{background:var(--green)}
-
-.step-title{font-family:'Fraunces',serif;font-size:1.05rem;font-weight:600;margin-bottom:12px}
-.actions-row{display:flex;gap:8px;margin-top:12px}
+.step-title{font-family:var(--font-bs);font-size:1.3rem;font-weight:normal;margin-bottom:16px;color:#fff;text-shadow:0 2px 0 #000}
+.actions-row{display:flex;gap:12px;margin-top:16px}
 </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div class="brand">Brawl<span>Card</span></div>
+  <div class="brand">Brawl<span>Card</span> ✨</div>
 </div>
 
 <div class="main" id="main">
   <div class="card-box">
-    <div class="step-title">Charge ton profil</div>
+    <div class="step-title">1. Identifie-toi</div>
     <div class="field">
-      <label>Tag Brawl Stars</label>
-      <input id="tag-inp" class="inp" placeholder="#1234ABCD" style="text-transform:uppercase;text-align:center;font-weight:600;letter-spacing:1px"/>
+      <label>Ton Tag Brawl Stars</label>
+      <input id="tag-inp" class="inp" placeholder="#8YULG2R9" style="text-transform:uppercase;text-align:center;font-weight:700;letter-spacing:1.5px" maxlength="11"/>
     </div>
     <div class="err-box" id="load-err"></div>
-    <button class="btn-main" id="btn-load">Charger →</button>
+    <button class="btn-main" id="btn-load">Scanner →</button>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
+// configuration
 const WORKER_URL = 'https://tark.alex-usagi84.workers.dev/?tag=';
-let player = null;
-let mode = null; // 'full' | 'trophies' | 'ranked' | 'brawler'
-let selectedBrawler = null;
+const ASSETS_BASE = 'https://cdn.brawlify.com';
 
-function toast(msg,type=''){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast show'+(type?' '+type:'');
-  clearTimeout(toast._tm);
-  toast._tm=setTimeout(()=>t.classList.remove('show'),2600);
-}
+// Fonds disponibles
+const BACKGROUNDS = [
+  { id: 'themes/starr-drops.png', name: 'Starr Drops', type:'image' },
+  { id: 'themes/starr-road.png', name: 'Starr Road', type:'image' },
+  { id: 'themes/godzilla.png', name: 'Godzilla', type:'image' },
+  { id: 'themes/cyberbrawl.png', name: 'CyberBrawl', type:'image' },
+  { id: 'themes/classic.png', name: 'Classique', type:'image' },
+  { id: 'gradient_blue', name: 'Dégradé Bleu', type:'gradient', colors: ['#0a1931', '#185adb'] },
+  { id: 'gradient_red', name: 'Dégradé Rouge', type:'gradient', colors: ['#2b0000', '#e84040'] },
+];
 
-async function fetchBsPlayer(tag){
-  const clean=(tag.startsWith('#')?tag.slice(1):tag).toUpperCase().trim();
-  const res=await fetch(WORKER_URL+encodeURIComponent(clean));
-  if(!res.ok) throw new Error('Joueur introuvable');
-  const data=await res.json();
-  if(data.error) throw new Error('Joueur introuvable');
-  return data;
-}
+// État de l'app
+let state = {
+  player: null,
+  mode: null, // 'profile' | 'brawler' | 'ranked'
+  selectedBrawler: null,
+  selectedBg: BACKGROUNDS[0],
+};
 
-function brawlerIconUrl(id){ return `https://cdn.brawlify.com/brawlers/borderless/${id}.png`; }
-function brawlerModelUrl(id){ return `https://cdn.brawlify.com/brawlers/model/${id}.png`; }
-function skinModelUrl(id){ return `https://cdn.brawlify.com/skins/borderless/${id}.png`; }
-function gadgetIconUrl(id){ return `https://cdn.brawlify.com/gadgets/borderless/${id}.png`; }
-function starPowerIconUrl(id){ return `https://cdn.brawlify.com/star-powers/borderless/${id}.png`; }
-function gearIconUrl(id){ return `https://cdn.brawlify.com/gears/borderless/${id}.png`; }
-function playerIconUrl(id){ return `https://cdn.brawlstats.com/player-thumbnails/${id}.png`; }
+// Helpers URLs assets
+const getIcon = (type, id) => `${ASSETS_BASE}/${type}/borderless/${id}.png`;
+const getModel = (type, id) => `${ASSETS_BASE}/${type}/models/${id}.png`;
+const playerIconUrl = (id) => `https://cdn.brawlstats.com/player-thumbnails/${id}.png`;
 
-const RANK_FR={BRONZE:'Bronze',SILVER:'Argent',GOLD:'Or',DIAMOND:'Diamant',MYTHIC:'Mythique',LEGENDARY:'Légendaire',MASTERS:'Maître',PRO:'Pro'};
+// Helpers Canvas & Traduction
+const RANK_FR={BRONZE:'Bronze',SILVER:'Argent',GOLD:'Or',DIAMOND:'Diamant',MYTHIC:'Mythique',LEGENDARY:'Légendaire',MASTERS:'Maître'};
 function translateRank(name){
-  if(!name) return null;
+  if(!name) return 'Non classé';
   const parts=String(name).trim().split(' ');
   const fr=RANK_FR[parts[0].toUpperCase()];
   if(!fr) return name;
-  const sub=parts.slice(1).join(' ');
-  return sub ? `${fr} ${sub}` : fr;
+  return parts[1] ? `${fr} ${parts[1]}` : fr;
 }
-function rankTierColors(name){
+function rankColor(name){
   const key = String(name||'').trim().split(' ')[0].toUpperCase();
-  const map = {
-    BRONZE:['#6b4326','#a9714a'],
-    SILVER:['#6b7178','#c7ccd1'],
-    GOLD:['#a8791c','#f0d878'],
-    DIAMOND:['#1c7fa0','#7fe0ff'],
-    MYTHIC:['#6f22a8','#d68bff'],
-    LEGENDARY:['#a8291f','#ff9a3c'],
-    MASTERS:['#1a1a1a','#5a5a5a'],
-    PRO:['#000000','#3a3a3a']
-  };
-  return map[key] || ['#3a3226','#ff8c35'];
+  const map = { BRONZE:'#cd7f32',SILVER:'#c0c0c0',GOLD:'#ffd700',DIAMOND:'#00eeee',MYTHIC:'#cc33ff',LEGENDARY:'#ff3333',MASTERS:'#1a1a1a' };
+  return map[key] || '#ffffff';
 }
 
-/* ══════════════ STEP 1 : charger le joueur ══════════════ */
-document.getElementById('btn-load').addEventListener('click', async ()=>{
-  const inp = document.getElementById('tag-inp');
-  const err = document.getElementById('load-err');
-  const btn = document.getElementById('btn-load');
-  const tag = (inp.value||'').trim().toUpperCase().replace(/^#*/,'');
-  err.textContent='';
-  if(!tag||tag.length<3){ err.textContent='Identifiant invalide'; return; }
-  btn.disabled=true; btn.innerHTML=`<span class="loader"></span>Recherche…`;
-  try{
-    player = await fetchBsPlayer(tag);
-    renderTemplatePicker();
-  }catch(e){
-    err.textContent = 'Joueur introuvable. Vérifie ton identifiant';
-  }finally{
-    btn.disabled=false; btn.textContent='Charger →';
-  }
-});
-
-/* ══════════════ STEP 2 : choix du type de carte ══════════════ */
-function renderTemplatePicker(){
-  const main = document.getElementById('main');
-  main.innerHTML = `
-    <div class="card-box">
-      <div class="player-chip">
-        <img src="${playerIconUrl(player.icon?.id)}" onerror="this.style.display='none'"/>
-        <div>
-          <div class="pname">${player.name}</div>
-          <div class="ptro">${player.trophies} 🏆 au total</div>
-        </div>
-        <span class="pchange" id="btn-change-tag">changer</span>
-      </div>
-      <div class="step-title">Quel type de carte ?</div>
-      <div class="tpl-grid">
-        <div class="tpl-btn" data-mode="full"><div class="tico">🪪</div><div class="tname">Profil complet</div></div>
-        <div class="tpl-btn" data-mode="trophies"><div class="tico">🏆</div><div class="tname">Trophées</div></div>
-        <div class="tpl-btn" data-mode="ranked"><div class="tico">🎖️</div><div class="tname">Classé</div></div>
-        <div class="tpl-btn" data-mode="brawler"><div class="tico">🥊</div><div class="tname">Un brawler</div></div>
-      </div>
-    </div>`;
-  document.getElementById('btn-change-tag').onclick = ()=>{ player=null; renderStart(); };
-  main.querySelectorAll('.tpl-btn').forEach(el=>{
-    el.onclick = ()=>{
-      mode = el.dataset.mode;
-      if(mode==='brawler') renderBrawlerPicker();
-      else renderPreview();
-    };
-  });
-}
-
-function renderStart(){
-  const main = document.getElementById('main');
-  main.innerHTML = `
-    <div class="card-box">
-      <div class="step-title">Charge ton profil</div>
-      <div class="field">
-        <label>Tag Brawl Stars</label>
-        <input id="tag-inp" class="inp" placeholder="#1234ABCD" style="text-transform:uppercase;text-align:center;font-weight:600;letter-spacing:1px"/>
-      </div>
-      <div class="err-box" id="load-err"></div>
-      <button class="btn-main" id="btn-load">Charger →</button>
-    </div>`;
-  document.getElementById('btn-load').addEventListener('click', async ()=>{
-    const inp = document.getElementById('tag-inp');
-    const err = document.getElementById('load-err');
-    const btn = document.getElementById('btn-load');
-    const tag = (inp.value||'').trim().toUpperCase().replace(/^#*/,'');
-    err.textContent='';
-    if(!tag||tag.length<3){ err.textContent='Identifiant invalide'; return; }
-    btn.disabled=true; btn.innerHTML=`<span class="loader"></span>Recherche…`;
-    try{
-      player = await fetchBsPlayer(tag);
-      renderTemplatePicker();
-    }catch(e){
-      err.textContent = 'Joueur introuvable. Vérifie ton identifiant';
-    }finally{ btn.disabled=false; btn.textContent='Charger →'; }
-  });
-}
-
-/* ══════════════ STEP 2b : choix du brawler ══════════════ */
-function renderBrawlerPicker(){
-  const brawlers = [...(player.brawlers||[])].sort((a,b)=>b.trophies-a.trophies);
-  const main = document.getElementById('main');
-  main.innerHTML = `
-    <div class="card-box">
-      <div class="step-title">Choisis un brawler</div>
-      <div class="blist">
-        ${brawlers.map(b=>`
-          <div class="bitem" data-bid="${b.id}">
-            <div class="bic"><img src="${brawlerIconUrl(b.id)}" onerror="this.style.display='none'"/></div>
-            <div class="bnm">${b.name}</div>
-            <div class="btr">${b.trophies} 🏆</div>
-          </div>`).join('')}
-      </div>
-      <button class="btn-main secondary" id="btn-back-tpl">← Retour</button>
-    </div>`;
-  document.getElementById('btn-back-tpl').onclick = renderTemplatePicker;
-  main.querySelectorAll('.bitem').forEach(el=>{
-    el.onclick = ()=>{
-      const bid = Number(el.dataset.bid);
-      selectedBrawler = brawlers.find(b=>b.id===bid);
-      renderPreview();
-    };
-  });
-}
-
-/* ══════════════ STEP 3 : aperçu + téléchargement ══════════════ */
-function renderPreview(){
-  const main = document.getElementById('main');
-  main.innerHTML = `
-    <div class="card-box">
-      <div class="preview-wrap"><canvas id="card-canvas" width="1000" height="1250"></canvas></div>
-      <div class="err-box" id="draw-err"></div>
-      <div class="actions-row">
-        <button class="btn-main secondary" id="btn-back">← Retour</button>
-        <button class="btn-main" id="btn-download">Télécharger l'image</button>
-      </div>
-    </div>`;
-  document.getElementById('btn-back').onclick = ()=>{
-    if(mode==='brawler') renderBrawlerPicker(); else renderTemplatePicker();
-  };
-  document.getElementById('btn-download').onclick = downloadCard;
-  drawCard();
-}
-
-function downloadCard(){
-  const canvas = document.getElementById('card-canvas');
-  const link = document.createElement('a');
-  const safeName = (player.name||'brawlcard').replace(/[^a-z0-9]/gi,'_');
-  link.download = `brawlcard_${safeName}_${mode}.png`;
-  link.href = canvas.toDataURL('image/png');
-  link.click();
-}
-
-/* ── Helpers Canvas ── */
 function loadImage(url){
   return new Promise(resolve=>{
     if(!url){ resolve(null); return; }
@@ -327,91 +190,122 @@ function loadImage(url){
   });
 }
 function roundRect(ctx,x,y,w,h,r){
-  ctx.beginPath();
-  ctx.moveTo(x+r,y);
-  ctx.arcTo(x+w,y,x+w,y+h,r);
-  ctx.arcTo(x+w,y+h,x,y+h,r);
-  ctx.arcTo(x,y+h,x,y,r);
-  ctx.arcTo(x,y,x+w,y,r);
-  ctx.closePath();
-}
-function drawCircleImage(ctx,img,cx,cy,radius){
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(cx,cy,radius,0,Math.PI*2);
-  ctx.closePath();
-  ctx.clip();
-  if(img){
-    const size = radius*2;
-    ctx.drawImage(img, cx-radius, cy-radius, size, size);
-  } else {
-    ctx.fillStyle = 'rgba(255,255,255,.12)';
-    ctx.fillRect(cx-radius, cy-radius, radius*2, radius*2);
-  }
-  ctx.restore();
-}
-function drawBackground(ctx,w,h){
-  const grad = ctx.createLinearGradient(0,0,w,h);
-  grad.addColorStop(0,'#1c1b20');
-  grad.addColorStop(1,'#2a2118');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0,0,w,h);
-  // halo accent
-  const halo = ctx.createRadialGradient(w*0.85,h*0.08,0,w*0.85,h*0.08,w*0.7);
-  halo.addColorStop(0,'rgba(255,92,53,.35)');
-  halo.addColorStop(1,'rgba(255,92,53,0)');
-  ctx.fillStyle = halo;
-  ctx.fillRect(0,0,w,h);
-  // diagonal stripes, style bande dessinée
-  ctx.save();
-  ctx.globalAlpha = 0.05;
-  ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 18;
-  for(let x=-h;x<w+h;x+=70){
-    ctx.beginPath();
-    ctx.moveTo(x,0);
-    ctx.lineTo(x+h,h);
-    ctx.stroke();
-  }
-  ctx.restore();
-}
-function drawFooter(ctx,w,h,tag){
-  ctx.fillStyle = 'rgba(255,255,255,.4)';
-  ctx.font = '400 22px Outfit';
-  ctx.textAlign = 'left';
-  ctx.fillText('Brawl' , 46, h-42);
-  ctx.fillStyle = 'rgba(255,92,53,.9)';
-  ctx.fillText('Card', 46+ctx.measureText('Brawl').width, h-42);
-  ctx.fillStyle = 'rgba(255,255,255,.4)';
-  ctx.textAlign = 'right';
-  ctx.fillText(`#${tag}`, w-46, h-42);
-}
-function chipBadge(ctx,x,y,w,h,label,value){
-  roundRect(ctx,x,y,w,h,14);
-  ctx.fillStyle = 'rgba(255,255,255,.06)';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,.1)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  ctx.fillStyle = 'rgba(255,255,255,.5)';
-  ctx.font = '600 18px Outfit';
-  ctx.textAlign = 'center';
-  ctx.fillText(label.toUpperCase(), x+w/2, y+34);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '700 40px Fraunces';
-  ctx.fillText(String(value), x+w/2, y+h-22);
+  if(w<2*r) r=w/2; if(h<2*r) r=h/2;
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
 }
 
 async function ensureFonts(){
+  try{ await document.fonts.load('1em BrawlStars'); await document.fonts.load('400 1em Outfit'); }catch(e){}
+}
+
+/* ══════════════ STEP 1 : Charger le joueur ══════════════ */
+async function handleLoad(){
+  const inp = document.getElementById('tag-inp');
+  const err = document.getElementById('load-err');
+  const btn = document.getElementById('btn-load');
+  const tag = (inp.value||'').trim().toUpperCase().replace(/^#*/,'');
+  err.textContent='';
+  if(!tag || tag.length < 3){ err.textContent='Tag invalide (min. 3 car.)'; return; }
+  btn.disabled=true; btn.innerHTML=`<span class="loader"></span>Scan en cours…`;
   try{
-    await Promise.all([
-      document.fonts.load('700 40px Fraunces'),
-      document.fonts.load('600 1em Fraunces'),
-      document.fonts.load('400 1em Outfit'),
-      document.fonts.load('600 1em Outfit'),
-      document.fonts.load('700 1em Outfit'),
-    ]);
-  }catch(e){}
+    const res = await fetch(WORKER_URL + encodeURIComponent(tag));
+    state.player = await res.json();
+    if(!res.ok || state.player.error) throw new Error();
+    renderCustomization();
+  }catch(e){ err.textContent = 'Joueur introuvable. Vérifie le tag !'; }
+  finally{ btn.disabled=false; btn.textContent='Scanner →'; }
+}
+
+// Init event
+document.getElementById('btn-load').addEventListener('click', handleLoad);
+document.getElementById('tag-inp').addEventListener('keypress',e=>e.key==='Enter'&&handleLoad());
+
+/* ══════════════ STEP 2 : Personnalisation ══════════════ */
+function renderCustomization(){
+  const p = state.player;
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="card-box">
+      <div class="player-chip">
+        <img src="${playerIconUrl(p.icon?.id)}" onerror="this.src='${getIcon('brawlers','16000000')}'"/>
+        <div><div class="pname" style="color:${p.nameColor ? '#'+p.nameColor.slice(2) : '#fff'}">${p.name}</div><div class="ptro">${p.trophies.toLocaleString('fr-FR')} 🏆</div></div>
+        <span class="pchange" onclick="location.reload()">changer</span>
+      </div>
+
+      <div class="step-title">2. Type de fiche</div>
+      <div class="tpl-grid">
+        <div class="tpl-btn ${state.mode==='profile'?'sel':''}" data-mode="profile"><div class="tico">🪪</div><div class="tname">Profil Global</div></div>
+        <div class="tpl-btn ${state.mode==='brawler'?'sel':''}" data-mode="brawler"><div class="tico">🥊</div><div class="tname">Un Brawler</div></div>
+        <div class="tpl-btn ${state.mode==='ranked'?'sel':''}" data-mode="ranked"><div class="tico">🎖️</div><div class="tname">Mode Classé</div></div>
+      </div>
+
+      <div id="brawler-select-container" style="display:${state.mode==='brawler'?'block':'none'}">
+        <div class="step-title" style="margin-top:16px">3. Choisis le Brawler</div>
+        <div class="field"><select id="brawler-shot" class="inp sel-inp">
+          ${[...(p.brawlers||[])].sort((a,b)=>b.trophies-a.trophies).map(b=>`<option value="${b.id}">${b.name} (${b.trophies}🏆)</option>`).join('')}
+        </select></div>
+      </div>
+
+      <div class="step-title" style="margin-top:16px"> Fond de la fiche</div>
+      <div class="bg-picker">
+        ${BACKGROUNDS.map(bg=>`
+          <div class="bg-option ${state.selectedBg.id===bg.id?'sel':''}" 
+               data-bg="${bg.id}" 
+               style="${bg.type==='image' ? `background-image:url(${ASSETS_BASE}/${bg.id})` : `background:linear-gradient(135deg, ${bg.colors[0]}, ${bg.colors[1]})`}"
+               title="${bg.name}">
+          </div>
+        `).join('')}
+      </div>
+
+      <button class="btn-main" id="btn-generate" style="margin-top:24px" ${!state.mode?'disabled':''}>Générer la fiche ✨</button>
+    </div>`;
+
+  // Events
+  main.querySelectorAll('.tpl-btn').forEach(el=> el.onclick=()=>{
+    state.mode = el.dataset.mode;
+    renderCustomization(); // re-render pour afficher/cacher brawler select
+  });
+
+  main.querySelectorAll('.bg-option').forEach(el=> el.onclick=()=>{
+    state.selectedBg = BACKGROUNDS.find(bg=>bg.id===el.dataset.bg);
+    main.querySelectorAll('.bg-option').forEach(o=>o.classList.remove('sel'));
+    el.classList.add('sel');
+  });
+
+  if(state.mode==='brawler'){
+    const sel = document.getElementById('brawler-shot');
+    sel.onchange = ()=>{
+      const bid = Number(sel.value);
+      state.selectedBrawler = p.brawlers.find(b=>b.id===bid);
+    };
+    sel.onchange(); // init selection
+  }
+
+  document.getElementById('btn-generate').onclick = renderPreview;
+}
+
+/* ══════════════ STEP 3 : Aperçu & Download ══════════════ */
+function renderPreview(){
+  const main = document.getElementById('main');
+  main.innerHTML = `
+    <div class="card-box">
+      <div class="step-title">Ta BrawlCard est prête !</div>
+      <div class="preview-wrap"><canvas id="card-canvas" width="800" height="1000"></canvas></div>
+      <div class="actions-row">
+        <button class="btn-main secondary" id="btn-back">← Retour</button>
+        <button class="btn-main" id="btn-download">Télécharger (.png)</button>
+      </div>
+    </div>`;
+  
+  document.getElementById('btn-back').onclick = renderCustomization;
+  document.getElementById('btn-download').onclick = ()=>{
+    const link = document.createElement('a');
+    link.download = `BrawlCard_${state.player.name}_${state.mode}.png`;
+    link.href = document.getElementById('card-canvas').toDataURL('image/png');
+    link.click();
+  };
+  
+  drawCard();
 }
 
 /* ══════════════ DESSIN DES CARTES ══════════════ */
@@ -419,267 +313,175 @@ async function drawCard(){
   const canvas = document.getElementById('card-canvas');
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  const errBox = document.getElementById('draw-err');
-  errBox.textContent='';
   await ensureFonts();
-  ctx.clearRect(0,0,W,H);
-  drawBackground(ctx,W,H);
-
-  try{
-    if(mode==='full') await drawFullCard(ctx,W,H);
-    else if(mode==='trophies') await drawTrophiesCard(ctx,W,H);
-    else if(mode==='ranked') await drawRankedCard(ctx,W,H);
-    else if(mode==='brawler') await drawBrawlerCard(ctx,W,H);
-  }catch(e){
-    errBox.textContent = "Une erreur est survenue pendant la génération de l'image.";
-  }
-  drawFooter(ctx,W,H,player.tag ? player.tag.replace(/^#/,'') : '');
-}
-
-async function drawFullCard(ctx,W,H){
-  const icon = await loadImage(player.icon?.id ? playerIconUrl(player.icon.id) : null);
-  drawCircleImage(ctx, icon, W/2, 230, 110);
-  ctx.strokeStyle = 'rgba(255,92,53,.8)';
-  ctx.lineWidth = 6;
-  ctx.beginPath(); ctx.arc(W/2,230,113,0,Math.PI*2); ctx.stroke();
-
-  ctx.textAlign='center';
-  ctx.fillStyle='#fff';
-  ctx.font = "700 52px Fraunces";
-  ctx.fillText(player.name || '—', W/2, 400);
-  ctx.fillStyle='rgba(255,255,255,.55)';
-  ctx.font = '500 26px Outfit';
-  ctx.fillText(`#${(player.tag||'').replace(/^#/,'')}`, W/2, 438);
-
-  // trophées géants
-  ctx.fillStyle='#ffcf6b';
-  ctx.font='700 100px Fraunces';
-  ctx.fillText(`🏆 ${player.trophies ?? '—'}`, W/2, 570);
-  ctx.fillStyle='rgba(255,255,255,.5)';
-  ctx.font='500 26px Outfit';
-  ctx.fillText(`Meilleur score : ${player.highestTrophies ?? '—'}`, W/2, 610);
-
-  // stats chips
-  const chips = [
-    ['Niveau', player.expLevel ?? '—'],
-    ['Victoires 3c3', player['3vs3Victories'] ?? '—'],
-    ['Victoires Solo', player.soloVictories ?? '—'],
-    ['Victoires Duo', player.duoVictories ?? '—'],
-  ];
-  const gap=24, cw=(W-92-gap)/2, ch=110, startY=680;
-  chips.forEach((c,i)=>{
-    const col=i%2, row=Math.floor(i/2);
-    chipBadge(ctx, 46+col*(cw+gap), startY+row*(ch+gap), cw, ch, c[0], c[1]);
-  });
-
-  // club
-  if(player.club?.name){
-    const y = startY+2*(ch+gap)+10;
-    roundRect(ctx,46,y,W-92,90,16);
-    ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=2; ctx.stroke();
-    ctx.textAlign='left';
-    ctx.fillStyle='rgba(255,255,255,.5)';
-    ctx.font='600 20px Outfit';
-    ctx.fillText('CLUB', 70, y+34);
-    ctx.fillStyle='#fff';
-    ctx.font='700 34px Fraunces';
-    ctx.fillText(player.club.name, 70, y+70);
-    ctx.textAlign='center';
-  }
-}
-
-async function drawTrophiesCard(ctx,W,H){
-  const icon = await loadImage(player.icon?.id ? playerIconUrl(player.icon.id) : null);
-  drawCircleImage(ctx, icon, W/2, 220, 95);
-  ctx.strokeStyle = 'rgba(255,207,107,.9)';
-  ctx.lineWidth = 6;
-  ctx.beginPath(); ctx.arc(W/2,220,98,0,Math.PI*2); ctx.stroke();
-
-  ctx.textAlign='center';
-  ctx.fillStyle='#fff';
-  ctx.font="700 44px Fraunces";
-  ctx.fillText(player.name||'—', W/2, 365);
-  ctx.fillStyle='rgba(255,255,255,.5)';
-  ctx.font='500 24px Outfit';
-  ctx.fillText(`#${(player.tag||'').replace(/^#/,'')}`, W/2, 398);
-
-  ctx.font='700 70px Outfit';
-  ctx.fillStyle='rgba(255,255,255,.65)';
-  ctx.fillText('🏆', W/2, 560);
-  ctx.font='700 170px Fraunces';
-  ctx.fillStyle='#ffcf6b';
-  ctx.fillText(String(player.trophies ?? '—'), W/2, 740);
-  ctx.font='600 30px Outfit';
-  ctx.fillStyle='rgba(255,255,255,.55)';
-  ctx.fillText('TROPHÉES ACTUELS', W/2, 785);
-
-  roundRect(ctx, W/2-220, 860, 440, 110, 18);
-  ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2; ctx.stroke();
-  ctx.fillStyle='rgba(255,255,255,.5)';
-  ctx.font='600 20px Outfit';
-  ctx.fillText('MEILLEUR SCORE', W/2, 905);
-  ctx.fillStyle='#fff';
-  ctx.font='700 46px Fraunces';
-  ctx.fillText(String(player.highestTrophies ?? '—'), W/2, 950);
-}
-
-async function drawRankedCard(ctx,W,H){
-  const rankRaw = player.rankedRankName || player.highestAllTimeRankedRankName || null;
-  const rankFr = translateRank(rankRaw) || 'Non classé';
-  const [c1,c2] = rankTierColors(rankRaw);
-
-  // médaillon dégradé
-  const grad = ctx.createLinearGradient(W/2-160,0,W/2+160,0);
-  grad.addColorStop(0,c1); grad.addColorStop(1,c2);
-  ctx.save();
-  ctx.beginPath(); ctx.arc(W/2,260,160,0,Math.PI*2); ctx.closePath();
-  ctx.fillStyle = grad; ctx.fill();
-  ctx.restore();
-  ctx.beginPath(); ctx.arc(W/2,260,160,0,Math.PI*2);
-  ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=6; ctx.stroke();
-  ctx.fillStyle='#fff';
-  ctx.font='700 64px Outfit';
-  ctx.textAlign='center';
-  ctx.fillText('🎖️', W/2, 285);
-
-  ctx.fillStyle='#fff';
-  ctx.font="700 56px Fraunces";
-  ctx.fillText(rankFr, W/2, 500);
-
-  ctx.fillStyle='rgba(255,255,255,.55)';
-  ctx.font='500 26px Outfit';
-  ctx.fillText(player.name||'—', W/2, 545);
-  ctx.font='500 22px Outfit';
-  ctx.fillText(`#${(player.tag||'').replace(/^#/,'')}`, W/2, 578);
-
-  if(player.highestAllTimeRankedRankName && rankRaw!==player.highestAllTimeRankedRankName){
-    roundRect(ctx, W/2-260, 650, 520, 110, 18);
-    ctx.fillStyle='rgba(255,255,255,.06)'; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2; ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.5)';
-    ctx.font='600 20px Outfit';
-    ctx.fillText('MEILLEUR RANG ATTEINT', W/2, 695);
-    ctx.fillStyle='#fff';
-    ctx.font='700 38px Fraunces';
-    ctx.fillText(translateRank(player.highestAllTimeRankedRankName), W/2, 738);
-  }
-
-  ctx.fillStyle='rgba(255,255,255,.65)';
-  ctx.font='500 24px Outfit';
-  ctx.fillText(`${player.trophies ?? '—'} 🏆 au total`, W/2, 850);
-}
-
-async function drawSideChip(ctx,x,y,w,h,item,iconFn){
-  roundRect(ctx,x,y,w,h,20);
-  ctx.fillStyle = item ? 'rgba(255,255,255,.08)' : 'rgba(255,255,255,.03)';
-  ctx.fill();
-  ctx.strokeStyle = item ? 'rgba(255,255,255,.2)' : 'rgba(255,255,255,.08)';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.textAlign='center';
-  if(item){
-    const img = await loadImage(iconFn(item.id));
-    const iconSize=84;
-    if(img) ctx.drawImage(img, x + (w - iconSize)/2, y + 20, iconSize, iconSize);
-    ctx.fillStyle='#fff';
-    ctx.font='600 18px Outfit';
-    let name = item.name || '';
-    while(ctx.measureText(name).width > w-18 && name.length>3){ name = name.slice(0,-1); }
-    if(name !== (item.name||'')) name = name.slice(0,-1)+'…';
-    ctx.fillText(name, x+w/2, y+h-24);
-  } else {
-    ctx.fillStyle='rgba(255,255,255,.32)';
-    ctx.font='500 19px Outfit';
-    ctx.fillText('Non', x+w/2, y+h/2-6);
-    ctx.fillText('débloqué', x+w/2, y+h/2+20);
-  }
-}
-
-async function drawBrawlerCard(ctx,W,H){
-  const b = selectedBrawler;
-
-  // Trophées actuels du brawler, en très grand (effet "bulle")
-  ctx.textAlign='center';
-  const trophyText = String(b.trophies ?? '—');
-  ctx.font = '700 140px Fraunces';
-  ctx.lineJoin = 'round';
-  ctx.lineWidth = 16;
-  ctx.strokeStyle = 'rgba(0,0,0,.35)';
-  ctx.strokeText(trophyText, W/2, 175);
-  ctx.fillStyle = '#ffffff';
-  ctx.fillText(trophyText, W/2, 175);
-
-  ctx.font = '600 27px Outfit';
-  ctx.fillStyle = 'rgba(255,255,255,.6)';
-  ctx.fillText(`${b.name}${b.power?' • Puissance '+b.power:''}`, W/2, 218);
-
-  // Gadgets (gauche) / Star powers (droite), en 2 emplacements chacun
-  const gadgets = b.gadgets || [];
-  const stars = b.starPowers || [];
-  const boxW=200, boxH=190, gapY=20;
-  const leftX=36, rightX=W-36-boxW;
-  const topY=340;
-  await drawSideChip(ctx, leftX, topY, boxW, boxH, gadgets[0]||null, gadgetIconUrl);
-  await drawSideChip(ctx, leftX, topY+boxH+gapY, boxW, boxH, gadgets[1]||null, gadgetIconUrl);
-  await drawSideChip(ctx, rightX, topY, boxW, boxH, stars[0]||null, starPowerIconUrl);
-  await drawSideChip(ctx, rightX, topY+boxH+gapY, boxW, boxH, stars[1]||null, starPowerIconUrl);
-
-  // Personnage principal complet au centre (Skin si équipé, sinon modèle de base)
-  let brawlerModel = null;
-  if (b.skin && b.skin.id && b.skin.name !== b.name) {
-    brawlerModel = await loadImage(skinModelUrl(b.skin.id));
-  }
-  if (!brawlerModel) {
-    brawlerModel = await loadImage(brawlerModelUrl(b.id));
-  }
-  if (!brawlerModel) {
-    brawlerModel = await loadImage(brawlerIconUrl(b.id));
-  }
-
-  const charW=520, charH=520;
-  const cx=W/2-charW/2, cy=topY-30;
-  ctx.save();
-  ctx.shadowColor='rgba(0,0,0,.55)';
-  ctx.shadowBlur=45;
-  ctx.shadowOffsetY=20;
-  if(brawlerModel) ctx.drawImage(brawlerModel, cx, cy, charW, charH);
-  ctx.restore();
-
-  // Détection propre de l'Hypercharge via "hyperCharges" (API)
-  const hasHypercharge = (b.hyperCharges && b.hyperCharges.length > 0) || b.hyperchargeLevel > 0;
-  const hcY = topY+2*boxH+gapY+55; 
   
-  roundRect(ctx, 36, hcY, W-72, 110, 20);
-  if(hasHypercharge) {
-    const hcGrad = ctx.createLinearGradient(36, 0, W-36, 0);
-    hcGrad.addColorStop(0, '#4a00e0');
-    hcGrad.addColorStop(0.5, '#8e2de2');
-    hcGrad.addColorStop(1, '#f000ff');
-    ctx.fillStyle = hcGrad;
-    ctx.fill();
-    ctx.strokeStyle = '#ff00ff';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '700 36px Outfit';
-    ctx.shadowColor = 'rgba(240, 0, 255, 1)';
-    ctx.shadowBlur = 12;
-    ctx.fillText('⚡ Hypercharge Active ⚡', W/2, hcY+65);
-    ctx.shadowBlur = 0;
+  ctx.clearRect(0,0,W,H);
+  
+  // 1. Fond Personnalisé
+  const bg = state.selectedBg;
+  ctx.save();
+  roundRect(ctx,0,0,W,H,28); ctx.clip(); // Arrondir les coins du canvas
+  if(bg.type==='image'){
+    const bgImg = await loadImage(`${ASSETS_BASE}/${bg.id}`);
+    if(bgImg){
+      const scale = Math.max(W/bgImg.width, H/bgImg.height);
+      const x=(W-bgImg.width*scale)/2, y=(H-bgImg.height*scale)/2;
+      ctx.drawImage(bgImg, x,y,bgImg.width*scale, bgImg.height*scale);
+    } else { ctx.fillStyle='#101115'; ctx.fillRect(0,0,W,H); }
   } else {
-    ctx.fillStyle = 'rgba(255,255,255,.04)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.1)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,.25)';
-    ctx.font = '600 32px Outfit';
-    ctx.fillText('⚡ Hypercharge indisponible', W/2, hcY+65);
+    const grad = ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,bg.colors[0]); grad.addColorStop(1,bg.colors[1]);
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  }
+  // Overlay sombre pour lisibilité
+  ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(0,0,W,H);
+  ctx.restore();
+
+  // 2. Tracé de la carte selon le mode
+  try{
+    if(state.mode==='profile') await drawProfileCard(ctx,W,H);
+    else if(state.mode==='brawler') await drawBrawlerCard(ctx,W,H);
+    else if(state.mode==='ranked') await drawRankedCard(ctx,W,H);
+  }catch(e){ console.error(e); }
+
+  // 3. Footer watermark
+  ctx.fillStyle='rgba(255,255,255,0.3)';
+  ctx.font='700 18px Outfit'; ctx.textAlign='right';
+  ctx.fillText('brawlcard.io ✨', W-30, H-25);
+  ctx.textAlign='left'; ctx.fillText(`#${state.player.tag.replace(/^#/,'')}`, 30, H-25);
+}
+
+// -- Helpers de tracé réutilisables --
+function drawTextBS(ctx, text, x, y, size, color='#fff', align='center', stroke='#000'){
+  ctx.save();
+  ctx.font=`${size}px BrawlStars`; ctx.textAlign=align;
+  if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=size/8; ctx.strokeText(text,x,y); }
+  ctx.fillStyle=color; ctx.fillText(text,x,y);
+  ctx.restore();
+}
+
+function drawStatBadge(ctx,x,y,w,h,icon,label,value,color='#fff'){
+  roundRect(ctx,x,y,w,h,14); ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.stroke();
+  if(icon) ctx.drawImage(icon, x+12, y+h/2-20, 40, 40);
+  ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.font='600 16px Outfit'; ctx.textAlign='left';
+  ctx.fillText(label, icon?x+62:x+15, y+25);
+  ctx.fillStyle=color; ctx.font='700 30px Outfit';
+  ctx.fillText(String(value), icon?x+62:x+15, y+h-15);
+}
+
+// ════════ FICHE PROFIL ════════
+async function drawProfileCard(ctx,W,H){
+  const p = state.player;
+  
+  // Entête (Icône + Nom)
+  const pIcon = await loadImage(playerIconUrl(p.icon.id));
+  if(pIcon){
+    ctx.save(); roundRect(ctx, W/2-70, 60, 140, 140, 25); ctx.clip();
+    ctx.drawImage(pIcon, W/2-70, 60, 140, 140); ctx.restore();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=5; roundRect(ctx, W/2-70, 60, 140, 140, 25); ctx.stroke();
+  }
+  
+  drawTextBS(ctx, p.name, W/2, 250, 55, p.nameColor?'#'+p.nameColor.slice(2):'#fff');
+  
+  // Gros Trophées
+  const tIcon = await loadImage(`${ASSETS_BASE}/icons/trophy.png`);
+  if(tIcon) ctx.drawImage(tIcon, W/2-110, 295, 60, 60);
+  drawTextBS(ctx, p.trophies.toLocaleString('fr-FR'), tIcon?W/2+30:W/2, 350, 80, '#ffcc00');
+
+  // Stats Grid
+  const stats = [
+    {label:'Niveau', val:p.expLevel, icon:`${ASSETS_BASE}/icons/xp.png`},
+    {label:'Victoires 3c3', val:p['3vs3Victories'], icon:`${ASSETS_BASE}/icons/3v3.png`},
+    {label:'Victoires Solo', val:p.soloVictories, icon:`${ASSETS_BASE}/icons/solo.png`},
+    {label:'Victoires Duo', val:p.duoVictories, icon:`${ASSETS_BASE}/icons/duo.png`},
+    {label:'Brawlers', val:`${p.brawlers.length}/80`, icon:`${ASSETS_BASE}/icons/brawlers.png`},
+    {label:'Club', val:p.club?.name || 'Aucun', icon:null},
+  ];
+
+  const iconsImgs = await Promise.all(stats.map(s=>loadImage(s.icon)));
+  
+  const gap=20, bw=(W-60-gap)/2, bh=90, startY=400;
+  stats.forEach((s,i)=>{
+    const col=i%2, row=Math.floor(i/2);
+    drawStatBadge(ctx, 30+col*(bw+gap), startY+row*(bh+gap), bw, bh, iconsImgs[i], s.label, s.val, s.label==='Club'?'#ffcc00':'#fff');
+  });
+}
+
+// ════════ FICHE BRAWLER ════════
+async function drawBrawlerCard(ctx,W,H){
+  const b = state.selectedBrawler;
+  if(!b) return;
+
+  // Modèle Complet 3D
+  const model = await loadImage(getModel('brawlers', b.id));
+  if(model){
+    ctx.save(); ctx.shadowColor='rgba(0,0,0,0.5)'; ctx.shadowBlur=30; ctx.shadowOffsetY=15;
+    const mH = 650; const mW = model.width * (mH/model.height);
+    ctx.drawImage(model, W/2-mW/2, 100, mW, mH); ctx.restore();
+  }
+
+  // Infos en bas
+  const rImg = await loadImage(`${ASSETS_BASE}/ranks/${b.rank}.png`);
+  if(rImg) ctx.drawImage(rImg, 30, H-210, 80, 80);
+  
+  drawTextBS(ctx, b.name, 125, H-165, 60, '#fff', 'left');
+  
+  // Trophées & Pouvoir
+  roundRect(ctx, 30, H-115, W-60, 70, 15); ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fill();
+  
+  const trIcon = await loadImage(`${ASSETS_BASE}/icons/trophy.png`);
+  if(trIcon) ctx.drawImage(trIcon, 50, H-105, 50, 50);
+  drawTextBS(ctx, b.trophies, 110, H-70, 50, '#ffcc00', 'left');
+  
+  drawTextBS(ctx, `POUVOIR ${b.power}`, W-50, H-70, 35, '#fff', 'right');
+
+  // Gadgets/StarPowers/Gears (Petites icônes en haut à droite)
+  const builds = [...(b.gadgets||[]), ...(b.starPowers||[]), ...(b.gears||[])];
+  const buildImgs = await Promise.all(builds.map(item => {
+    let type = b.gadgets.includes(item)?'gadgets' : (b.starPowers.includes(item)?'star-powers':'gears');
+    return loadImage(getIcon(type, item.id));
+  }));
+
+  buildImgs.forEach((img, i)=>{
+    if(img){
+      const x = W-80, y=80 + i*75;
+      ctx.fillStyle='rgba(0,0,0,0.4)'; roundRect(ctx, x-5, y-5, 70, 70, 10); ctx.fill();
+      ctx.drawImage(img, x, y, 60, 60);
+    }
+  });
+}
+
+// ════════ FICHE RANKED ════════
+async function drawRankedCard(ctx,W,H){
+  const p = state.player;
+  const rankRaw = p.rankedRankName || 'Bronze I'; // Fallback
+  const rankFr = translateRank(rankRaw);
+  const rColor = rankColor(rankRaw);
+
+  // Grosse Icône de Rang
+  const rankId = rankRaw.toLowerCase().replace(' ','-');
+  const rankIcon = await loadImage(`${ASSETS_BASE}/ranked/${rankId}.png`);
+  if(rankIcon){
+    ctx.save(); ctx.shadowColor=rColor; ctx.shadowBlur=40;
+    ctx.drawImage(rankIcon, W/2-175, 100, 350, 350); ctx.restore();
+  }
+
+  drawTextBS(ctx, rankFr, W/2, 530, 70, rColor);
+  drawTextBS(ctx, p.name, W/2, 610, 45, p.nameColor?'#'+p.nameColor.slice(2):'#fff');
+
+  // Stats
+  roundRect(ctx, 100, 660, W-200, 120, 20); ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fill();
+  ctx.strokeStyle=rColor; ctx.lineWidth=2; ctx.stroke();
+  
+  drawTextBS(ctx, 'Score Actuel', W/2, 710, 30, 'rgba(255,255,255,0.7)');
+  drawTextBS(ctx, p.rankedTrophies ? p.rankedTrophies.toLocaleString('fr-FR') : '—', W/2, 765, 60, '#fff');
+
+  if(p.highestAllTimeRankedRankName){
+    drawTextBS(ctx, `Record : ${translateRank(p.highestAllTimeRankedRankName)}`, W/2, 830, 25, 'rgba(255,255,255,0.5)');
   }
 }
+
 </script>
 </body>
 </html>
